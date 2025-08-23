@@ -1,0 +1,47 @@
+# Ruby/Rails gem project .gitignore
+
+# Environment files
+.env
+.env.*
+*.env
+*.env.*
+
+# Bundler
+/.bundle/
+/vendor/bundle/
+
+# Build artifacts
+/pkg/
+/coverage/
+/.yardoc/
+/doc/
+
+# Temporary files
+/tmp/
+/log/
+*.log
+
+# OS/editor files
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Gemfile lockfile (ignored for libraries/gems)
+Gemfile.lock
+
+# Local credentials and certs (demo/support files)
+/config/google/service_account.json
+/config/google/*.json
+/config/certs/*
+*.pem
+*.p12
+
+# Byebug/pry history
+.byebug_history
+.pry_history
+
+# Ruby version/lock (optional to commit; ignore locally)
+.ruby-gemset
+.ruby-version
