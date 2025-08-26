@@ -16,6 +16,61 @@ module WalletPasskit
         patch({ loyaltyPoints: { balance: { int: new_point_value }}})
       end
 
+      # Recupera un oggetto loyalty specifico dal Google Wallet
+      def retrieve_object
+        uri = URI("https://walletobjects.googleapis.com/walletobjects/v1/loyaltyObject/#{@object_id}")
+        req = Net::HTTP::Get.new(uri)
+        req["Authorization"] = "Bearer #{access_token}"
+
+        res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
+          http.request(req)
+        end
+
+        raise WalletPasskit::Error, "Errore API: #{res.body}" unless res.is_a?(Net::HTTPSuccess)
+        JSON.parse(res.body)
+      end
+
+      # Metodo pubblico per recuperare l'oggetto
+      def get_object
+        retrieve_object
+      end
+
+      # Metodi per ottenere informazioni specifiche dell'oggetto
+      def get_points
+        object = retrieve_object
+        object.dig('loyaltyPoints', 'balance', 'int') || 0
+      end
+
+      def get_state
+        object = retrieve_object
+        object['state']
+      end
+
+      def get_account_name
+        object = retrieve_object
+        object['accountName']
+      end
+
+      def get_account_id
+        object = retrieve_object
+        object['accountId']
+      end
+
+      def get_creation_time
+        object = retrieve_object
+        object['createTime']
+      end
+
+      def get_update_time
+        object = retrieve_object
+        object['updateTime']
+      end
+
+      # Metodo di classe per recuperare un oggetto senza creare un'istanza
+      def self.retrieve_object(object_id:, service_account_path:)
+        new(object_id: object_id, service_account_path: service_account_path).get_object
+      end
+
       private
 
       def patch(data)
