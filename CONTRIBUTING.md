@@ -1,47 +1,47 @@
-### Contribuire al progetto
+### Contributing to this project
 
-Grazie per voler contribuire! Per mantenere il progetto ordinato e stabile, segui il flusso di lavoro qui sotto. Le regole sono semplici ma **obbligatorie**.
+Thanks for your interest in contributing! To keep the project organized and stable, please follow the workflow below. These rules are simple but **mandatory**.
 
-- **Prerequisiti**
-  - Assicurati di avere un ambiente di sviluppo funzionante e di poter eseguire i test localmente.
-  - Rispetta lo stile del codice esistente (lint, formattazione, convenzioni).
+- **Prerequisites**
+  - Ensure you can run the project and tests locally.
+  - Follow the existing code style (linting, formatting, conventions).
 
-### Flusso di lavoro obbligatorio
+### Mandatory workflow
 
-1. **Apri una Issue**
-   - Cerca prima se esiste già un'issue simile.
-   - Se non esiste, aprine una descrivendo chiaramente: contesto, problema, proposta di soluzione e impatto.
-2. **Crea un branch dedicato**
-   - Usa un nome descrittivo, ad esempio: `feature/nome-breve` o `fix/bug-descrizione`.
-3. **Apri una Pull Request (PR)**
-   - Collega la PR all'Issue (usa parole chiave come "Closes #<numero>").
-   - Spiega cosa cambia, perché, e come è stato testato.
-   - Mantieni la PR piccola e focalizzata.
-4. **Assicurati che i test passino**
-   - Esegui i test in locale prima di inviare.
-   - La CI deve risultare verde. PR con test rossi non verranno fuse.
-5. **Revisione e merge**
-   - Il maintainer rivede la PR e, se tutto è ok e i test passano, **approva e fa il merge**.
-   - Potrebbe chiedere modifiche: rispondi puntualmente ai commenti e aggiorna la PR.
+1. **Open an Issue**
+   - First, search for existing issues to avoid duplicates.
+   - If none exist, open a new one describing: context, problem, proposed solution, and impact.
+2. **Create a dedicated branch**
+   - Use a descriptive name, e.g., `feature/short-name` or `fix/bug-description`.
+3. **Open a Pull Request (PR)**
+   - Link the PR to the Issue (use keywords like "Closes #<number>").
+   - Explain what changes were made, why, and how they were tested.
+   - Keep PRs small and focused.
+4. **Ensure tests pass**
+   - Run tests locally before submitting.
+   - CI must be green. PRs with failing tests will not be merged.
+5. **Review and merge**
+   - The maintainer reviews the PR and, if everything looks good and tests pass, **approves and merges** it.
+   - The maintainer may request changes; please address comments and update the PR.
 
-### Linee guida per commit e PR
+### Commit and PR guidelines
 
-- **Commit**
-  - Messaggi chiari e descrittivi (imperativo, es.: "Aggiunge validazione email").
-  - Unità logiche: evita commit monolitici con cambi non correlati.
-- **PR**
-  - Descrizione completa (cosa, perché, come testare).
-  - Checklist suggerita:
-    - [ ] Issue collegata
-    - [ ] Test aggiornati/aggiunti
-    - [ ] Lint/format eseguiti
-    - [ ] Breaking changes documentate
+- **Commits**
+  - Use clear, descriptive messages (imperative mood, e.g., "Add email validation").
+  - Keep commits logically scoped; avoid unrelated changes in the same commit.
+- **PRs**
+  - Provide a complete description (what, why, how to test).
+  - Suggested checklist:
+    - [ ] Linked Issue
+    - [ ] Tests updated/added
+    - [ ] Lint/format run
+    - [ ] Breaking changes documented
 
-### Eseguire i test
+### Running tests
 
-- Esegui tutti i test localmente prima di aprire/aggiornare la PR.
-- Se esistono script nel progetto (es. `make test`, `npm test`, `pytest`, ecc.), usali.
+- Run all tests locally before opening/updating a PR.
+- If the project provides scripts (e.g., `make test`, `npm test`, `pytest`, etc.), please use them.
 
-### Domande
+### Questions
 
-Se hai dubbi, apri una **Discussion** o chiedi chiarimenti nell'Issue prima di implementare.
+If you have questions, open a **Discussion** or ask in the Issue before implementing.
