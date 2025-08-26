@@ -8,15 +8,11 @@ RSpec.describe WalletPasskit::Google::PassUpdater do
     allow(WalletPasskit::Google::Auth).to receive(:access_token).and_return("fake_token")
 
     stub_request(:patch, "https://walletobjects.googleapis.com/walletobjects/v1/loyaltyObject/#{object_id}")
-      .with(
-        headers: { "Authorization" => "Bearer fake_token" },
-        body: hash_including({
-                               loyaltyPoints: hash_including({
-                                                               balance: { int: 150 }
-                                                             })
-                             })
-      )
-      .to_return(status: 200, body: { success: true }.to_json, headers: {})
+      .with { |req|
+        req.headers["Authorization"] == "Bearer fake_token" &&
+          JSON.parse(req.body).dig("loyaltyPoints", "balance", "int") == 150
+      }
+      .to_return(status: 200, body: { success: true }.to_json, headers: { "Content-Type" => "application/json" })
 
     updater = described_class.new(object_id: object_id, service_account_path: service_account_path)
 

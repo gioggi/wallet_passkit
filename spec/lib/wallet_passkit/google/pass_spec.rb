@@ -48,8 +48,7 @@ RSpec.describe WalletPasskit::Google::Pass do
     expect(url).to include("https://pay.google.com/gp/v/save/")
 
     token = url.split("/").last
-    header, payload, _sig = token.split(".")
-    decoded_payload = JSON.parse(Base64.urlsafe_decode64(payload + "=="))
+    decoded_payload = JWT.decode(token, nil, false).first
 
     lo = decoded_payload.fetch("payload").fetch("loyaltyObjects").first
 
