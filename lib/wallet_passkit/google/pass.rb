@@ -1,103 +1,62 @@
+# frozen_string_literal: true
+
 require "googleauth"
 require "jwt"
-require "json"
 
 module WalletPasskit
   module Google
     class Pass
-      GOOGLE_WALLET_URL = "https://pay.google.com/gp/v/save/".freeze
-
-      def initialize(customer_id:, class_id:, issuer_id:, points:, name:, qr_value:, company:, service_account_path: nil)
-        @customer_id = customer_id
-        @class_id = class_id
-        @issuer_id = issuer_id
-        @points = points
-        @name = name
-        @qr_value = qr_value
-        @company = company
-        @service_account_path = service_account_path || ENV["GOOGLE_WALLET_SERVICE_ACCOUNT_JSON_PATH"]
+      def initialize(company:, customer:, service_account_path:)
+        @company = company.transform_keys(&:to_sym)
+        @customer = customer.transform_keys(&:to_sym)
+        @service_account_path = service_account_path
       end
 
       def save_url
-        jwt = build_jwt
-        "#{GOOGLE_WALLET_URL}#{jwt}"
+        payload = {
+          iss: issuer_id,
+          aud: "google",
+          typ: "savetowallet",
+          payload: {
+            loyaltyObjects: [build_loyalty_object]
+          }
+        }
+
+        jwt = JWT.encode(payload, private_key, "RS256", kid: key_id)
+        "https://pay.google.com/gp/v/save/#{jwt}"
       end
 
       private
 
-      def build_jwt
-        credentials = ::Google::Auth::ServiceAccountCredentials.make_creds(
-          json_key_io: File.open(@service_account_path),
-          scope: ["https://www.googleapis.com/auth/wallet_object.issuer"]
+      def issuer_id
+        @company[:issuer_id]
+      end
+
+      def key_id
+        JSON.parse(File.read(@service_account_path))["private_key_id"]
+      end
+
+      def private_key
+        OpenSSL::PKey::RSA.new(
+          JSON.parse(File.read(@service_account_path))["private_key"]
         )
-        credentials.fetch_access_token!
+      end
 
-        object_id = "#{@issuer_id}.company#{@company[:id]}_customer#{@customer_id}"
-
-        payload = {
-          iss: credentials.client_email,
-          aud: "google",
-          origins: [@company[:origin] || "https://keristo.cloud"], # da configurare
-          typ: "savetowallet",
-          payload: {
-            loyaltyObjects: [
-              {
-                id: object_id,
-                classId: "#{@issuer_id}.#{@class_id}",
-                state: "active",
-                accountId: @customer_id.to_s,
-                accountName: @name,
-
-                barcode: {
-                  type: "qrCode",
-                  value: @qr_value,
-                  alternateText: "ID Cliente"
-                },
-
-                loyaltyPoints: {
-                  label: "Punti disponibili",
-                  balance: {
-                    string: @points.to_s
-                  }
-                },
-
-                textModulesData: [
-                  {
-                    header: "Benvenuto!",
-                    body: "Hai #{@points} punti da #{@company[:name]}."
-                  }
-                ],
-
-                locations: [
-                  {
-                    latitude: @company[:latitude],
-                    longitude: @company[:longitude]
-                  }
-                ],
-
-                logo: {
-                  source_uri: {
-                    uri: @company[:logo_url]
-                  },
-                  content_description: @company[:name]
-                },
-
-                heroImage: {
-                  source_uri: {
-                    uri: @company[:hero_image_url]
-                  },
-                  content_description: "Promozione"
-                },
-
-                hexBackgroundColor: @company[:background_color] || "#ffffff"
-              }
-            ]
+      def build_loyalty_object
+        {
+          id: "#{issuer_id}.#{@customer[:id]}",
+          classId: "#{issuer_id}.#{@company[:class_id]}",
+          state: "active",
+          accountId: @customer[:id],
+          accountName: "#{@customer[:first_name]} #{@customer[:last_name]}",
+          loyaltyPoints: {
+            label: "Punti",
+            balance: {
+              int: @customer[:points] || 0
+            }
           }
         }
-
-        JWT.encode(payload, credentials.signing_key, "RS256")
       end
     end
   end
 end
-
