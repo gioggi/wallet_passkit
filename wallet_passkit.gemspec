@@ -19,6 +19,8 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency "rubyzip", "~> 2.3"
   spec.add_runtime_dependency "jwt", "~> 2.7"
+  spec.add_runtime_dependency "googleauth", ">= 0.16.0"
+
 
   spec.add_development_dependency "rake", ">= 13.0"
   spec.add_development_dependency "rspec", ">= 3.12"
