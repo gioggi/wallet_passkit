@@ -87,50 +87,12 @@ send_data pkpass_binary, filename: 'loyalty.pkpass', type: 'application/vnd.appl
 
 If you prefer to fully control pass.json, just pass your own hash to `generate_pkpass`.
 
-## Google Wallet: Build a Save link (+ customization)
+## Google Wallet
 
-See detailed docs in `lib/wallet_passkit/google/README.md`.
+For step-by-step setup (Issuer, API enablement, Service Account, LoyaltyClass) and usage examples (Save link and updates), see the dedicated guide:
+- `lib/wallet_passkit/google/README.md`
 
-Minimal example:
-
-```ruby
-company = {
-  issuer_id: ENV['GOOGLE_ISSUER_ID'],
-  class_id: 'loyalty-class-id',
-  background_color: '#FF0000',
-  font_color: '#FFFFFF',
-  logo_uri: 'https://example.com/logo.png',
-  hero_image_uri: 'https://example.com/hero.png',
-  locations: [ { latitude: 45.4642, longitude: 9.1900 } ]
-}
-
-customer = {
-  id: 'customer-123',
-  first_name: 'Mario',
-  last_name: 'Rossi',
-  points: 120,
-  qr_value: 'UUID-1234'
-}
-
-url = WalletPasskit::Google::Pass.new(
-  company: company,
-  customer: customer,
-  service_account_path: Rails.application.config.wallet_passkit.google_service_account_credentials
-).save_url
-```
-
-Updating points later via REST:
-
-```ruby
-WalletPasskit::Google::PassUpdater.new(
-  object_id: "#{company[:issuer_id]}.#{customer[:id]}",
-  service_account_path: Rails.application.config.wallet_passkit.google_service_account_credentials
-).update_points(new_point_value: 150)
-```
-
-### Google docs
-- Developer guide: https://developers.google.com/wallet
-- Wallet Objects API reference: https://developers.google.com/wallet/retail/loyalty-cards
+This gem generates a Save to Google Wallet link (JWT) and provides a minimal updater for loyalty points.
 
 ## Development
 
