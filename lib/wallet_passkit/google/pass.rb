@@ -16,12 +16,50 @@ module WalletPasskit
       end
 
       def save_url
+        # For save URL, we need a simplified object structure
+        # The full object structure is only for API calls
+        save_object = {
+          id: "#{issuer_id}.#{@customer[:id]}",
+          classId: "#{issuer_id}.#{@company[:class_id]}",
+          state: "active",
+          accountId: @customer[:id],
+          accountName: "#{@customer[:first_name]} #{@customer[:last_name]}",
+          loyaltyPoints: {
+            label: "Punti",
+            balance: {
+              int: @customer[:points] || 0
+            }
+          }
+        }
+
+        # Add optional fields for save URL
+        if @company[:background_color]
+          save_object[:hexBackgroundColor] = @company[:background_color]
+        end
+
+        if @company[:font_color]
+          save_object[:hexFontColor] = @company[:font_color]
+        end
+
+        # Add barcode for save URL
+        if @customer[:qr_value]
+          save_object[:barcode] = {
+            type: "QR_CODE",
+            value: @customer[:qr_value]
+          }
+        elsif @customer[:barcode_value]
+          save_object[:barcode] = {
+            type: (@customer[:barcode_type] || "QR_CODE"),
+            value: @customer[:barcode_value]
+          }
+        end
+
         payload = {
-          iss: issuer_id,
+          iss: service_account_email,
           aud: "google",
           typ: "savetowallet",
           payload: {
-            loyaltyObjects: [build_loyalty_object]
+            loyaltyObjects: [save_object]
           }
         }
 
@@ -70,6 +108,10 @@ module WalletPasskit
 
       def access_token
         WalletPasskit::Google::Auth.access_token(service_account_path: @service_account_path)
+      end
+
+      def service_account_email
+        JSON.parse(File.read(@service_account_path))["client_email"]
       end
 
       def issuer_id
@@ -126,14 +168,16 @@ module WalletPasskit
         end
         object[:imageModulesData] = image_modules unless image_modules.empty?
 
-        if @company[:locations].is_a?(Array)
-          object[:locations] = @company[:locations].map do |loc|
-            {
-              latitude: loc[:latitude] || loc["latitude"],
-              longitude: loc[:longitude] || loc["longitude"]
-            }
-          end
-        end
+        # Note: merchantLocations requires special authorization from Google
+        # For now, we'll skip locations to avoid API errors
+        # if @company[:locations].is_a?(Array)
+        #   object[:merchantLocations] = @company[:locations].map do |loc|
+        #     {
+        #       latitude: loc[:latitude] || loc["latitude"],
+        #       longitude: loc[:longitude] || loc["longitude"]
+        #     }
+        #   end
+        # end
 
         if @customer[:qr_value]
           object[:barcode] = {

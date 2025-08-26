@@ -64,10 +64,12 @@ company_data = {
   font_color: "#FFFFFF",            # White
   logo_uri: "https://example.com/logo.png",
   hero_image_uri: "https://example.com/hero.png",
-  locations: [
-    { latitude: 45.4642, longitude: 9.1900 },  # Milan
-    { latitude: 41.9028, longitude: 12.4964 }  # Rome
-  ]
+  # Note: locations/merchantLocations requires special Google authorization
+# For now, we'll skip locations to avoid API errors
+# locations: [
+#   { latitude: 45.4642, longitude: 9.1900 },  # Milan
+#   { latitude: 41.9028, longitude: 12.4964 }  # Rome
+# ]
 }
 
 # Customer data
@@ -350,6 +352,23 @@ puts "Points updated: #{manager.get_card_info(object_id).dig('loyaltyPoints', 'b
 - Reuse `PassUpdater` instances for multiple operations
 - Use static class method for single operations
 - Cache access tokens when possible
+
+### Known Issues and Limitations
+
+#### **Deprecated Fields**
+- **`locations` field is deprecated** according to [Google Wallet API documentation](https://developers.google.com/wallet/reference/rest/v1/loyaltyobject)
+- **`merchantLocations` is the replacement** but requires special Google authorization
+- **Your Issuer ID is not allowlisted** for merchant locations functionality
+
+#### **Solutions for Locations**
+1. **Contact Google Support** to request merchant locations authorization
+2. **Remove locations** from your objects (current workaround)
+3. **Use alternative methods** like custom text fields to display location info
+
+#### **JWT Structure Issues**
+- **Save URL JWT** now uses simplified object structure
+- **API calls** use full object structure with all fields
+- **Both structures** are validated and tested
 
 ## 🔗 Useful Links
 
