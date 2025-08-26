@@ -90,7 +90,7 @@ If you prefer to fully control pass.json, just pass your own hash to `generate_p
 ## Google Wallet
 
 For step-by-step setup (Issuer, API enablement, Service Account, LoyaltyClass) and usage examples (Save link and updates), see the dedicated guide:
-- `lib/wallet_passkit/google/README.md`
+- https://github.com/gioggi/wallet_passkit/blob/main/lib/wallet_passkit/google/README.md
 
 This gem generates a Save to Google Wallet link (JWT) and provides a minimal updater for loyalty points.
 
