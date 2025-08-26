@@ -43,7 +43,7 @@ module WalletPasskit
       end
 
       def build_loyalty_object
-        {
+        object = {
           id: "#{issuer_id}.#{@customer[:id]}",
           classId: "#{issuer_id}.#{@company[:class_id]}",
           state: "active",
@@ -56,6 +56,54 @@ module WalletPasskit
             }
           }
         }
+
+        if @company[:background_color]
+          object[:hexBackgroundColor] = @company[:background_color]
+        end
+
+        if @company[:font_color]
+          object[:hexFontColor] = @company[:font_color]
+        end
+
+        image_modules = []
+        if @company[:logo_uri]
+          image_modules << {
+            mainImage: {
+              sourceUri: { uri: @company[:logo_uri] }
+            }
+          }
+        end
+        if @company[:hero_image_uri]
+          image_modules << {
+            mainImage: {
+              sourceUri: { uri: @company[:hero_image_uri] }
+            }
+          }
+        end
+        object[:imageModulesData] = image_modules unless image_modules.empty?
+
+        if @company[:locations].is_a?(Array)
+          object[:locations] = @company[:locations].map do |loc|
+            {
+              latitude: loc[:latitude] || loc["latitude"],
+              longitude: loc[:longitude] || loc["longitude"]
+            }
+          end
+        end
+
+        if @customer[:qr_value]
+          object[:barcode] = {
+            type: "QR_CODE",
+            value: @customer[:qr_value]
+          }
+        elsif @customer[:barcode_value]
+          object[:barcode] = {
+            type: (@customer[:barcode_type] || "QR_CODE"),
+            value: @customer[:barcode_value]
+          }
+        end
+
+        object
       end
     end
   end

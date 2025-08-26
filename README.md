@@ -1,8 +1,10 @@
 # wallet_passkit
 
-A modern Ruby gem to generate Apple Wallet passes (.pkpass) and integrate easily into Rails projects. Also includes a minimal Google Wallet "Save to Wallet" JWT link builder.
+A modern Ruby gem to generate Apple Wallet passes (.pkpass) and integrate easily into Rails projects. Also includes Google Wallet helpers (Save link, object updates).
 
-Status: initial minimal implementation.
+[![CI](https://github.com/gioggi/wallet_passkit/actions/workflows/test.yml/badge.svg)](https://github.com/gioggi/wallet_passkit/actions/workflows/test.yml)
+
+Status: initial implementation for Apple + Google (Save link + updater).
 
 ## Installation
 
@@ -32,7 +34,7 @@ WalletPasskit.configure do |c|
   c.apple_team_identifier           = "TEAMID1234"
   c.apple_organization_name         = "My Org"
 
-  # Google Wallet (optional for Save link)
+  # Google Wallet (optional for Save link / updater)
   c.google_service_account_credentials = "/path/to/service_account.json"
   c.google_issuer_id   = "issuer-id" # optional
   c.google_class_prefix = "com.example" # optional
@@ -67,7 +69,9 @@ payload = WalletPasskit::Apple::Service.build_pass_payload(
   pass_type_identifier: 'pass.com.example.loyalty',
   serial_number: 'ABC123',
   logo_text: 'My Store',
-  primary_fields: [ { key: 'points', label: 'Points', value: '100' } ]
+  primary_fields: [ { key: 'points', label: 'Points', value: '100' } ],
+  background_color: 'rgb(255,0,0)',
+  foreground_color: 'rgb(255,255,255)'
 )
 
 assets = {
@@ -83,28 +87,61 @@ send_data pkpass_binary, filename: 'loyalty.pkpass', type: 'application/vnd.appl
 
 If you prefer to fully control pass.json, just pass your own hash to `generate_pkpass`.
 
-## Google Wallet: Build a Save link
+## Google Wallet: Build a Save link (+ customization)
 
-This gem includes a minimal helper to build a Save to Google Wallet JWT link (user clicks to save). A complete REST integration for class/object creation is not included in this minimal version.
+See detailed docs in `lib/wallet_passkit/google/README.md`.
+
+Minimal example:
 
 ```ruby
-payload = {
-  # Per Google spec, supply classes/objects, e.g. `loyaltyObjects` or `eventTicketObjects`
-  loyaltyObjects: [ { id: "#{ENV['GOOGLE_ISSUER_ID']}.my_object_id", state: 'ACTIVE', accountId: '123' } ]
+company = {
+  issuer_id: ENV['GOOGLE_ISSUER_ID'],
+  class_id: 'loyalty-class-id',
+  background_color: '#FF0000',
+  font_color: '#FFFFFF',
+  logo_uri: 'https://example.com/logo.png',
+  hero_image_uri: 'https://example.com/hero.png',
+  locations: [ { latitude: 45.4642, longitude: 9.1900 } ]
 }
 
-url = WalletPasskit::Google::Service.build_save_url(payload: payload)
-# Render as button
-# <a href="<%= url %>"><img src="https://pay.google.com/gp/v/save/static/img/save.svg" /></a>
+customer = {
+  id: 'customer-123',
+  first_name: 'Mario',
+  last_name: 'Rossi',
+  points: 120,
+  qr_value: 'UUID-1234'
+}
+
+url = WalletPasskit::Google::Pass.new(
+  company: company,
+  customer: customer,
+  service_account_path: Rails.application.config.wallet_passkit.google_service_account_credentials
+).save_url
 ```
 
-Credentials must be a service account JSON that includes `client_email` and `private_key`.
+Updating points later via REST:
+
+```ruby
+WalletPasskit::Google::PassUpdater.new(
+  object_id: "#{company[:issuer_id]}.#{customer[:id]}",
+  service_account_path: Rails.application.config.wallet_passkit.google_service_account_credentials
+).update_points(new_point_value: 150)
+```
+
+### Google docs
+- Developer guide: https://developers.google.com/wallet
+- Wallet Objects API reference: https://developers.google.com/wallet/retail/loyalty-cards
+
+## Development
+
+- Run tests: `bundle exec rspec`
+- Lint: pending
 
 ## Notes & Limitations
 
 - Apple requires asset files to be included and a correctly signed manifest. This gem signs with PKCS#7 (DER) using your pass certificate and Apple WWDR intermediate.
 - You must handle obtaining and managing certificates/keys securely.
-- For Google Wallet, only the Save link JWT creation is provided here. For full class/object management, you can extend this gem to call Google Wallet Objects REST APIs.
+- For Google Wallet, this gem builds a Save link JWT and provides a minimal updater; for full class/object management, extend accordingly.
 
 ## License
 

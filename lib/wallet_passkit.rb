@@ -8,6 +8,7 @@ require "zip"
 require_relative "wallet_passkit/version"
 require_relative "wallet_passkit/configuration"
 require_relative "wallet_passkit/google"
+require_relative "wallet_passkit/apple"
 require_relative "wallet_passkit/railtie"
 require_relative "wallet_passkit/error"
 
