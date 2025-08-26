@@ -88,9 +88,17 @@ pass = WalletPasskit::Google::Pass.new(
   # service_account_path NOT needed anymore!
 )
 
-# Generating the Save URL
+# Option 1: Generate Save URL only (for existing objects)
 save_url = pass.save_url
 puts "🔗 Save URL: #{save_url}"
+
+# Option 2: Create object in Google Wallet AND generate Save URL
+created_object = pass.create_loyalty_object
+puts "🎫 Object created with ID: #{created_object['id']}"
+
+# Option 3: Create object and get Save URL in one call
+save_url = pass.create_and_save_url
+puts "🔗 Save URL for new object: #{save_url}"
 
 ### Example 2: Simple Object Creation (Without Images)
 
@@ -119,6 +127,49 @@ pass = WalletPasskit::Google::Pass.new(
 
 save_url = pass.save_url
 ```
+
+## 🆕 **New Methods for Creating Loyalty Objects**
+
+### **Method 1: `create_loyalty_object`**
+Creates a loyalty object in Google Wallet using the API and returns the created object data.
+
+```ruby
+# Create the object in Google Wallet
+created_object = pass.create_loyalty_object
+
+if created_object && created_object['id']
+  puts "✅ Object created successfully!"
+  puts "   ID: #{created_object['id']}"
+  puts "   State: #{created_object['state']}"
+  puts "   Created at: #{created_object['createTime']}"
+else
+  puts "❌ Failed to create object"
+end
+```
+
+### **Method 2: `create_and_save_url`**
+Creates the loyalty object AND generates the save URL in one call.
+
+```ruby
+# Create object and get save URL in one operation
+save_url = pass.create_and_save_url
+puts "🔗 Save URL for new object: #{save_url}"
+```
+
+### **Method 3: `save_url` (existing)**
+Generates save URL for existing objects (doesn't create new objects).
+
+```ruby
+# Generate save URL for existing object
+save_url = pass.save_url
+puts "🔗 Save URL: #{save_url}"
+```
+
+### **When to Use Each Method:**
+
+- **`create_loyalty_object`**: When you want to create a new object and get the object data
+- **`create_and_save_url`**: When you want to create a new object and immediately get the save URL
+- **`save_url`**: When you already have an existing object and just need the save URL
 
 ## 🔍 Retrieving Google Wallet Objects
 
