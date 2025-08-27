@@ -37,32 +37,32 @@ module WalletPasskit
 
       # Metodi per ottenere informazioni specifiche dell'oggetto
       def get_points
-        object = retrieve_object
+        object = get_object
         object.dig('loyaltyPoints', 'balance', 'int') || 0
       end
 
       def get_state
-        object = retrieve_object
+        object = get_object
         object['state']
       end
 
       def get_account_name
-        object = retrieve_object
+        object = get_object
         object['accountName']
       end
 
       def get_account_id
-        object = retrieve_object
+        object = get_object
         object['accountId']
       end
 
       def get_creation_time
-        object = retrieve_object
+        object = get_object
         object['createTime']
       end
 
       def get_update_time
-        object = retrieve_object
+        object = get_object
         object['updateTime']
       end
 

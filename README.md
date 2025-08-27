@@ -3,6 +3,7 @@
 A modern Ruby gem to generate Apple Wallet passes (.pkpass) and integrate easily into Rails projects. Also includes Google Wallet helpers (Save link, object updates).
 
 [![CI](https://github.com/gioggi/wallet_passkit/actions/workflows/test.yml/badge.svg)](https://github.com/gioggi/wallet_passkit/actions/workflows/test.yml)
+[![Test Coverage](https://img.shields.io/badge/coverage-91.6%25-brightgreen)](https://github.com/gioggi/wallet_passkit)
 
 Status: initial implementation for Apple + Google (Save link + updater).
 

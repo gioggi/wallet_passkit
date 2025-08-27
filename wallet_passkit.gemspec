@@ -5,12 +5,14 @@ Gem::Specification.new do |spec|
   spec.version       = File.read(File.expand_path("lib/wallet_passkit/version.rb", __dir__)).match(/VERSION\s*=\s*"([^"]+)"/)[1] rescue "0.1.0"
   spec.authors       = ["Gioggi"]
   spec.email         = ["info@giovanniesposito.it"]
-
+  spec.homepage      = "https://rubygems.org/gems/wallet_passkit"
   spec.summary       = "Generate Apple Wallet .pkpass and integrate with Rails; scaffold for Google Wallet"
   spec.description   = "A modern, lightweight Ruby gem for generating Apple Wallet passes (.pkpass) with OpenSSL signing, easy Rails integration services, and a minimal Google Wallet Save link generator."
   spec.homepage      = "https://example.com/wallet_passkit"
   spec.license       = "MIT"
-
+  spec.metadata      = {
+    "source_code_uri" => "https://github.com/gioggi/wallet_passkit"
+  }
   spec.files         = Dir["lib/**/*", "README.md", "LICENSE*"].uniq
   spec.require_paths = ["lib"]
 
@@ -25,4 +27,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", ">= 13.0"
   spec.add_development_dependency "rspec", ">= 3.12"
   spec.add_development_dependency "webmock", ">= 3.0"
+  spec.add_development_dependency "simplecov", ">= 0.22.0"
 end

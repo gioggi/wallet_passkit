@@ -1,4 +1,11 @@
 # spec/spec_helper.rb
+require "simplecov"
+SimpleCov.start do
+  add_filter "/spec/"
+  add_filter "/vendor/"
+  minimum_coverage 89
+end
+
 require "bundler/setup"
 require "wallet_passkit"
 require "googleauth"

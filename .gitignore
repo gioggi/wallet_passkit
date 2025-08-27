@@ -15,6 +15,7 @@
 /coverage/
 /.yardoc/
 /doc/
+*.gem
 
 # Temporary files
 /tmp/
